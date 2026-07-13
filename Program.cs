@@ -12,7 +12,6 @@ DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // 2. CORREÇÃO CRÍTICA: Diz para o .NET ler as variáveis de ambiente do sistema.
-// Isso faz o mapeamento automático de 'Jwt__Key' (no .env) para 'Jwt:Key' (no C#).
 builder.Configuration.AddEnvironmentVariables();
 
 // 3. Agora você pode pegar a connection string direto do Configuration de forma limpa!
@@ -21,6 +20,8 @@ var connectionString = builder.Configuration["CONNECTION_STRING"];
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddScoped<TokenService>();
+
+// CONFIGURAÇÃO DO OPENAPI/SCALAR
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>

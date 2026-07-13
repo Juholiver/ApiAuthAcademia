@@ -133,3 +133,6 @@ C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug
 C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll

@@ -1,6 +1,7 @@
 using ApiAuth.Data;
 using ApiAuth.DTOs;
 using ApiAuth.Models;
+using ApiAuth.Services;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +14,12 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    public AuthController(AppDbContext context)
+    private readonly TokenService _tokenService;
+
+    public AuthController(AppDbContext context, TokenService tokenService)
     {
         _context = context;
+        _tokenService = tokenService;
     }
 
     [HttpPost("register")]
@@ -47,6 +51,31 @@ public class AuthController : ControllerBase
         return Created("", new
         {
             mensagem = "Usuário cadastrado com sucesso."
+        });
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto dto)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+        if (usuario == null)
+            return Unauthorized("Email ou senha inválidos.");
+
+        bool senhaCorreta =
+            BCrypt.Net.BCrypt.Verify(
+                dto.Senha,
+                usuario.SenhaHash);
+
+        if (!senhaCorreta)
+            return Unauthorized("Email ou senha inválidos.");
+
+        var token = _tokenService.GerarToken(usuario);
+
+        return Ok(new
+        {
+            token
         });
     }
 }

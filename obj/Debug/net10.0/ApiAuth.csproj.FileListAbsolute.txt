@@ -123,3 +123,13 @@ C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\obj\Debug
 C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\obj\Debug\net10.0\ApiAuth.pdb
 C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\obj\Debug\net10.0\ApiAuth.genruntimeconfig.cache
 C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\obj\Debug\net10.0\ref\ApiAuth.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\DotNetEnv.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Superpower.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\junin\OneDrive\Documentos\Projetos\c#\ApiAuth\ApiAuth\ApiAuth\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll

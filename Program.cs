@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using ApiAuth.Interfaces;
+using ApiAuth.Repositories;
 
 // 1. Carrega as variáveis do arquivo .env para o ambiente do sistema
 DotNetEnv.Env.Load();
@@ -23,6 +25,12 @@ var connectionString = builder.Configuration["CONNECTION_STRING"];
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddScoped<TokenService>();
+
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 // CONFIGURAÇÃO DO OPENAPI/SCALAR
 builder.Services.AddOpenApi();

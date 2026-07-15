@@ -1,10 +1,6 @@
-using ApiAuth.Data;
 using ApiAuth.DTOs;
-using ApiAuth.Models;
-using ApiAuth.Services;
-using BCrypt.Net;
+using ApiAuth.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApiAuth.Controllers;
 
@@ -12,14 +8,11 @@ namespace ApiAuth.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IAuthService _authService;
 
-    private readonly TokenService _tokenService;
-
-    public AuthController(AppDbContext context, TokenService tokenService)
+    public AuthController(IAuthService authService)
     {
-        _context = context;
-        _tokenService = tokenService;
+        _authService = authService;
     }
 
     [HttpPost("register")]
@@ -28,25 +21,15 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        bool emailExiste = await _context.Usuarios
-            .AnyAsync(u => u.Email == dto.Email);
+        bool sucesso = await _authService.RegistrarAsync(dto);
 
-        if (emailExiste)
+        if (!sucesso)
+        {
             return BadRequest(new
             {
                 mensagem = "E-mail já cadastrado."
             });
-
-        var usuario = new Usuario
-        {
-            Nome = dto.Nome,
-            Email = dto.Email,
-            SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha)
-        };
-
-        _context.Usuarios.Add(usuario);
-
-        await _context.SaveChangesAsync();
+        }
 
         return Created("", new
         {
@@ -57,21 +40,18 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-        var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        if (usuario == null)
-            return Unauthorized("Email ou senha inválidos.");
+        var token = await _authService.LoginAsync(dto);
 
-        bool senhaCorreta =
-            BCrypt.Net.BCrypt.Verify(
-                dto.Senha,
-                usuario.SenhaHash);
-
-        if (!senhaCorreta)
-            return Unauthorized("Email ou senha inválidos.");
-
-        var token = _tokenService.GerarToken(usuario);
+        if (token == null)
+        {
+            return Unauthorized(new
+            {
+                mensagem = "E-mail ou senha inválidos."
+            });
+        }
 
         return Ok(new
         {

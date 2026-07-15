@@ -38,6 +38,7 @@ builder.Services.AddControllers();
 // Serviços de Infraestrutura e Core da Aplicação
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 

@@ -1,30 +1,28 @@
-using ApiAuth.Data;          // <-- Importante para achar o AppDbContext
 using ApiAuth.DTOs;
 using ApiAuth.Interfaces;
 using ApiAuth.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApiAuth.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IUsuarioRepository _repository;
+    private readonly IUsuarioRepository _usuarioRepository;
+    private readonly IRefreshTokenRepository _tokenRepository; // <-- Injetado aqui
     private readonly TokenService _tokenService;
-    private readonly AppDbContext _context; // <-- Injetado aqui para gerenciar os RefreshTokens
 
     public AuthService(
-        IUsuarioRepository repository,
-        TokenService tokenService,
-        AppDbContext context) // <-- Adicionado no construtor
+        IUsuarioRepository usuarioRepository,
+        IRefreshTokenRepository tokenRepository, // <-- Adicionado ao construtor
+        TokenService tokenService)
     {
-        _repository = repository;
+        _usuarioRepository = usuarioRepository;
+        _tokenRepository = tokenRepository;
         _tokenService = tokenService;
-        _context = context;
     }
 
     public async Task<bool> RegistrarAsync(RegisterDto dto)
     {
-        if (await _repository.EmailExisteAsync(dto.Email))
+        if (await _usuarioRepository.EmailExisteAsync(dto.Email))
             return false;
 
         Usuario usuario = new()
@@ -34,15 +32,15 @@ public class AuthService : IAuthService
             SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha)
         };
 
-        await _repository.CriarAsync(usuario);
-        await _repository.SalvarAsync();
+        await _usuarioRepository.CriarAsync(usuario);
+        await _usuarioRepository.SalvarAsync();
 
         return true;
     }
 
     public async Task<string?> LoginAsync(LoginDto dto)
     {
-        var usuario = await _repository.ObterPorEmailAsync(dto.Email);
+        var usuario = await _usuarioRepository.ObterPorEmailAsync(dto.Email);
 
         if (usuario == null)
             return null;
@@ -55,17 +53,16 @@ public class AuthService : IAuthService
         return _tokenService.GerarToken(usuario);
     }
 
-    // --- IMPLEMENTAÇÃO DO REFRESH TOKEN ---
+    // --- REFRESH TOKEN SEM DBCOUNTEXT DIRETO ---
     public async Task<object?> RefreshTokenAsync(RefreshTokenDto dto)
     {
         if (string.IsNullOrEmpty(dto.RefreshToken))
             return null;
 
-        // 1. Buscar o Refresh Token no banco usando o DbContext
-        var tokenExistente = await _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.Token == dto.RefreshToken);
+        // 1. Busca usando o repositório correto
+        var tokenExistente = await _tokenRepository.ObterPorTokenAsync(dto.RefreshToken);
 
-        // 2. Validar existência, expiração e se foi revogado
+        // 2. Validações
         if (tokenExistente == null || 
             tokenExistente.ExpiraEm < DateTime.UtcNow || 
             tokenExistente.Revogado)
@@ -73,11 +70,8 @@ public class AuthService : IAuthService
             return null;
         }
 
-        // 3. Buscar o usuário
-        var usuario = await _repository.ObterPorIdAsync(tokenExistente.UsuarioId); 
-        // Nota: Se você não tiver ObterPorIdAsync no seu repository, pode usar:
-        // var usuario = await _context.Usuarios.FindAsync(tokenExistente.UsuarioId);
-        
+        // 3. Buscar usuário pelo ID (ajuste o método se o seu repositório de usuário tiver outro nome, ex: ObterPorIdAsync)
+        var usuario = await _usuarioRepository.ObterPorIdAsync(tokenExistente.UsuarioId);
         if (usuario == null)
             return null;
 
@@ -85,10 +79,9 @@ public class AuthService : IAuthService
         var novoAccessToken = _tokenService.GerarToken(usuario);
         var novoRefreshTokenString = _tokenService.GerarRefreshToken();
 
-        // 5. Revogar o token antigo
+        // 5. Revogar token atual e persistir novo
         tokenExistente.Revogado = true;
 
-        // 6. Cadastrar o novo Refresh Token
         RefreshToken novoRefreshToken = new()
         {
             Token = novoRefreshTokenString,
@@ -97,8 +90,8 @@ public class AuthService : IAuthService
             Revogado = false
         };
 
-        _context.RefreshTokens.Add(novoRefreshToken);
-        await _context.SaveChangesAsync();
+        await _tokenRepository.CriarAsync(novoRefreshToken);
+        await _tokenRepository.SalvarAsync();
 
         return new
         {
@@ -107,20 +100,19 @@ public class AuthService : IAuthService
         };
     }
 
-    // --- IMPLEMENTAÇÃO DO LOGOUT ---
+    // --- LOGOUT SEM DBCONTEXT DIRETO ---
     public async Task<bool> LogoutAsync(RefreshTokenDto dto)
     {
         if (string.IsNullOrEmpty(dto.RefreshToken))
             return false;
 
-        var tokenExistente = await _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.Token == dto.RefreshToken);
+        var tokenExistente = await _tokenRepository.ObterPorTokenAsync(dto.RefreshToken);
 
         if (tokenExistente == null)
             return false;
 
         tokenExistente.Revogado = true;
-        await _context.SaveChangesAsync();
+        await _tokenRepository.SalvarAsync();
 
         return true;
     }

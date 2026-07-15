@@ -8,6 +8,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using ApiAuth.Interfaces;
 using ApiAuth.Repositories;
+using ApiAuth.Middlewares;
 
 // 1. Carrega as variáveis do arquivo .env para o ambiente do sistema
 DotNetEnv.Env.Load();
@@ -103,6 +104,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

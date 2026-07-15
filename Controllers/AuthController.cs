@@ -1,5 +1,6 @@
 using ApiAuth.DTOs;
 using ApiAuth.Interfaces;
+using ApiAuth.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiAuth.Controllers;
@@ -31,10 +32,12 @@ public class AuthController : ControllerBase
             });
         }
 
-        return Created("", new
-        {
-            mensagem = "Usuário cadastrado com sucesso."
-        });
+        return Created("",
+            new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Usuário cadastrado."
+            });
     }
 
     [HttpPost("login")]
@@ -53,9 +56,15 @@ public class AuthController : ControllerBase
             });
         }
 
-        return Ok(new
-        {
-            token
-        });
+        return Ok(
+            new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Login realizado.",
+                Data = new
+                {
+                    token
+                }
+            });
     }
 }

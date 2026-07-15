@@ -67,4 +67,46 @@ public class AuthController : ControllerBase
                 }
             });
     }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshTokenDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var resultado = await _authService.RefreshTokenAsync(dto);
+
+        if (resultado == null)
+        {
+            return Unauthorized(new ApiResponse<object>
+            {
+                Success = false,
+                Message = "Token inválido, expirado ou revogado."
+            });
+        }
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Token atualizado com sucesso.",
+            Data = resultado
+        });
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(RefreshTokenDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        // O logout tenta revogar o token. Mesmo se retornar falso (token não achado),
+        // retornamos sucesso para não dar pistas de segurança sobre a existência do token.
+        await _authService.LogoutAsync(dto);
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Logout realizado com sucesso."
+        });
+    }
 }

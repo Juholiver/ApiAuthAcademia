@@ -2,6 +2,7 @@ using ApiAuth.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ApiAuth.Services;
@@ -17,37 +18,40 @@ public class TokenService
 
     public string GerarToken(Usuario usuario)
     {
-        // 1. Garante que as variáveis de ambiente recarregadas sejam acessíveis
-        var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key") 
+        var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key")
                      ?? _configuration["Jwt:Key"];
-                     
-        var jwtIssuer = Environment.GetEnvironmentVariable("Jwt__Issuer") 
+
+        var jwtIssuer = Environment.GetEnvironmentVariable("Jwt__Issuer")
                         ?? _configuration["Jwt:Issuer"];
-                        
-        var jwtAudience = Environment.GetEnvironmentVariable("Jwt__Audience") 
+
+        var jwtAudience = Environment.GetEnvironmentVariable("Jwt__Audience")
                           ?? _configuration["Jwt:Audience"];
-                          
-        var jwtExpires = Environment.GetEnvironmentVariable("Jwt__ExpiresInMinutes") 
-                         ?? _configuration["Jwt:ExpiresInMinutes"] 
+
+        var jwtExpires = Environment.GetEnvironmentVariable("Jwt__ExpiresInMinutes")
+                         ?? _configuration["Jwt:ExpiresInMinutes"]
                          ?? "60";
 
-        if (string.IsNullOrEmpty(jwtKey) || jwtKey.Length < 32)
+        if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
         {
-            throw new InvalidOperationException("A chave JWT (Jwt__Key) precisa ter no mínimo 32 caracteres e estar configurada corretamente.");
+            throw new InvalidOperationException(
+                "A chave JWT deve possuir no mínimo 32 caracteres.");
         }
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Name, usuario.Nome),
-            new Claim(JwtRegisteredClaimNames.Email, usuario.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Adiciona identificador único ao Token
+            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+            new Claim(ClaimTypes.Name, usuario.Nome),
+            new Claim(ClaimTypes.Email, usuario.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey));
 
-        // Ajustamos para DateTime.UtcNow para evitar problemas de fuso horário na validação
+        var credentials = new SigningCredentials(
+            key,
+            SecurityAlgorithms.HmacSha256);
+
         var token = new JwtSecurityToken(
             issuer: jwtIssuer,
             audience: jwtAudience,
@@ -56,5 +60,12 @@ public class TokenService
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GerarRefreshToken()
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(64);
+
+        return Convert.ToBase64String(randomBytes);
     }
 }

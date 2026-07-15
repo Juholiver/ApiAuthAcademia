@@ -11,4 +11,8 @@ public class Usuario
     public string SenhaHash { get; set; } = string.Empty;
 
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
+
+    // Relação 1:N com RefreshToken
+    public ICollection<RefreshToken> RefreshTokens { get; set; }
+        = new List<RefreshToken>();
 }

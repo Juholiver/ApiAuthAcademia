@@ -14,7 +14,7 @@ public class ProfileService : IProfileService
         _usuarioRepository = usuarioRepository;
     }
 
-    // --- CORREÇÃO DO NOME DO MÉTODO AQUI ---
+
     public async Task<ProfileResponseDto?> ObterPerfilPorIdAsync(int usuarioId)
     {
         var usuario = await _usuarioRepository.ObterPorIdAsync(usuarioId);

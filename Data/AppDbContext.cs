@@ -22,7 +22,7 @@ public class AppDbContext : DbContext
         // Garante que se o usuário for deletado, os refresh tokens dele também sejam limpos (Cascade Delete)
         modelBuilder.Entity<RefreshToken>()
             .HasOne<Usuario>() 
-            .WithMany() // Se sua classe Usuario não tiver uma List<RefreshToken>, deixe vazio
+            .WithMany() 
             .HasForeignKey(rt => rt.UsuarioId)
             .OnDelete(DeleteBehavior.Cascade);
 

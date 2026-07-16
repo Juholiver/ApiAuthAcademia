@@ -9,7 +9,7 @@ public interface IUsuarioRepository
     Task<bool> EmailExisteAsync(string email);
     Task CriarAsync(Usuario usuario);
     
-    // Adicione estes:
+   
     void Atualizar(Usuario usuario);
     void Excluir(Usuario usuario);
     Task SalvarAsync();

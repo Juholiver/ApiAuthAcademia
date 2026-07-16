@@ -41,4 +41,14 @@ public class UsuarioRepository : IUsuarioRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public void Atualizar(Usuario usuario)
+    {
+        _context.Usuarios.Update(usuario);
+    }
+
+    public void Excluir(Usuario usuario)
+    {
+        _context.Usuarios.Remove(usuario);
+    }
 }

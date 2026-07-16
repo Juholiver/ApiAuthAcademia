@@ -22,6 +22,24 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173", // Porta padrão do Vite (se usar Vite)
+                "http://localhost:3000", // Porta padrão do Create React App
+                "https://seu-app-react.vercel.app" // URL do seu React em produção (quando hospedar)
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Importante caso envie cookies ou headers de autenticação específicos
+    });
+});
+
+builder.Services.AddControllers();
+
 // Força o provedor de configuração do .NET a ler variáveis de ambiente do sistema.
 // Essencial para produção (Docker, AWS, Azure), permitindo que 'Jwt__Key' seja interpretada corretamente como 'Jwt:Key'.
 builder.Configuration.AddEnvironmentVariables();
@@ -135,6 +153,10 @@ app.UseHttpsRedirection();
 // Middleware Global de Exceções: Captura erros não tratados e formata respostas HTTP limpas.
 // Nota de ordem: Deve ficar antes de Auth para capturar falhas em todo o fluxo da requisição.
 app.UseMiddleware<ExceptionMiddleware>();
+
+// CORS: Permite que o front-end (React) faça requisições para esta API sem bloqueios de origem cruzada.
+// CORS Sempre acima de Authentication/Authorization para que o navegador possa enviar os headers corretos.
+app.UseCors("AllowReactApp");
 
 // Ordem crítica de segurança: Quem você é (Authentication) deve vir ANTES do que você pode fazer (Authorization).
 app.UseAuthentication();

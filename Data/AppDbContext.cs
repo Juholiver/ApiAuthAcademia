@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
+    public DbSet<Treino> Treinos { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

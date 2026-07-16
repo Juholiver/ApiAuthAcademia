@@ -41,6 +41,8 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<ITreinoRepository, TreinoRepository>();
+builder.Services.AddScoped<ITreinoService, TreinoService>();
 
 // Documentação da API via OpenAPI (antigo Swagger) integrado ao Scalar
 builder.Services.AddOpenApi();

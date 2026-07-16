@@ -1,24 +1,22 @@
-# Estágio 1: Build da aplicação usando o SDK do .NET 10
+# Estágio de Build
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copia o arquivo .csproj da API e restaura as dependências do NuGet
-COPY ["ApiAuth/ApiAuth.csproj", "ApiAuth/"]
-RUN dotnet restore "ApiAuth/ApiAuth.csproj"
+# Copia o .csproj que está na raiz e restaura as dependências
+COPY ["ApiAuth.csproj", "./"]
+RUN dotnet restore "ApiAuth.csproj"
 
-# Copia todos os arquivos do repositório para o container
+# Copia todos os arquivos restantes da raiz para o container
 COPY . .
-WORKDIR "/src/ApiAuth"
 
-# Compila o projeto no modo Release sem o executável do host
+# Compila o projeto
 RUN dotnet publish "ApiAuth.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Estágio 2: Criação da imagem final leve de execução (Runtime)
+# Estágio de Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Define a variável de ambiente para expor a porta que configuramos (8080)
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 

@@ -4,6 +4,11 @@ using ApiAuth.Responses;
 
 namespace ApiAuth.Middlewares;
 
+/// <summary>
+/// Middleware global para capturar exceções não tratadas e devolver um
+/// `ApiResponse` consistente ao cliente. Mantém a API previsível e evita
+/// vazar detalhes de implementação em produção.
+/// </summary>
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;

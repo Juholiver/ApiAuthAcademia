@@ -7,6 +7,13 @@ using System.Text;
 
 namespace ApiAuth.Services;
 
+/// <summary>
+/// Gera tokens JWT (access) e refresh tokens.
+/// - `GerarToken` monta claims básicos (`Id`, `Nome`, `Email`) e assina com a chave simétrica.
+/// - `GerarRefreshToken` usa RNG criptográfico para produzir uma string segura.
+///
+/// A configuração do JWT é lida de variáveis de ambiente ou `IConfiguration`.
+/// </summary>
 public class TokenService
 {
     private readonly IConfiguration _configuration;
@@ -31,6 +38,7 @@ public class TokenService
                          ?? _configuration["Jwt:ExpiresInMinutes"]
                          ?? "60";
 
+        // Requisito de segurança: chave secreta suficientemente longa
         if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
         {
             throw new InvalidOperationException(

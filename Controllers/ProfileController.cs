@@ -8,7 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiAuth.Controllers;
 
-[Authorize] // Garante que apenas usuários logados acessem essa controller
+/// <summary>
+/// Endpoints para gerenciar o perfil do usuário autenticado.
+/// Requer o header `Authorization: Bearer {token}`.
+/// </summary>
+[Authorize]
 [ApiController]
 [Route("api/profile")]
 public class ProfileController : ControllerBase

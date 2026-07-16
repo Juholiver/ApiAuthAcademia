@@ -4,6 +4,16 @@ using ApiAuth.Models;
 
 namespace ApiAuth.Services;
 
+/// <summary>
+/// Serviço responsável pelas operações de autenticação:
+/// - Registrar usuário (hash de senha)
+/// - Login (validação de credenciais e geração de access token)
+/// - Refresh token (validação, revogação e rotação)
+/// - Logout (revogação do refresh token)
+///
+/// Mantenha a lógica de persistência em repositórios e a geração de tokens
+/// encapsulada em <see cref="TokenService"/> para facilitar testes.
+/// </summary>
 public class AuthService : IAuthService
 {
     private readonly IUsuarioRepository _usuarioRepository;
@@ -22,6 +32,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> RegistrarAsync(RegisterDto dto)
     {
+        // Verifica duplicidade de e-mail antes de criar
         if (await _usuarioRepository.EmailExisteAsync(dto.Email))
             return false;
 
@@ -50,6 +61,7 @@ public class AuthService : IAuthService
         if (!senhaValida)
             return null;
 
+        // Retorna apenas o access token. O refresh token é tratado separadamente.
         return _tokenService.GerarToken(usuario);
     }
 
@@ -79,7 +91,7 @@ public class AuthService : IAuthService
         var novoAccessToken = _tokenService.GerarToken(usuario);
         var novoRefreshTokenString = _tokenService.GerarRefreshToken();
 
-        // 5. Revogar token atual e persistir novo
+        // 5. Revogar token atual e persistir novo (rotacionamento)
         tokenExistente.Revogado = true;
 
         RefreshToken novoRefreshToken = new()

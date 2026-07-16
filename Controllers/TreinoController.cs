@@ -7,6 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiAuth.Controllers;
 
+/// <summary>
+/// Endpoints para gerenciar a ficha de treinos do usuário.
+/// - `GET` retorna a ficha agrupada por divisão (A/B/C)
+/// - `POST` adiciona exercício
+/// - `DELETE` remove exercício se pertencer ao usuário autenticado
+/// Requer `Authorization: Bearer {token}`.
+/// </summary>
 [Authorize]
 [ApiController]
 [Route("api/treinos")]

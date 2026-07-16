@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiAuth.Controllers;
 
+/// <summary>
+/// Endpoints de autenticação: register, login, refresh e logout.
+/// - `register` e `login` são públicos.
+/// - `refresh`/`logout` operam com refresh tokens passados no corpo.
+/// </summary>
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase

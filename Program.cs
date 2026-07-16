@@ -10,14 +10,15 @@ using ApiAuth.Interfaces;
 using ApiAuth.Repositories;
 using ApiAuth.Middlewares;
 
-#region 1. CONFIGURAÇÕES INICIAIS E VARIÁVEIS DE AMBIENTE
+// ApiAuth - Inicialização
+// Este arquivo configura os serviços essenciais da aplicação:
+// - Carregamento de variáveis de ambiente (.env em dev)
+// - Configuração do EF/Core (Postgres)
+// - Autenticação JWT (validação de issuer/audience/key)
+// - Registrador de serviços e repositórios
+// Observação: mantenha a ordem dos middlewares (CORS -> Auth -> Authorization).
 
-// Carrega as variáveis do arquivo .env para o ambiente do sistema operacional.
-// Útil para desenvolvimento local, simulando containers ou ambientes de nuvem.
 DotNetEnv.Env.Load();
-
-// Evita que o .NET mapeie os claims padrão do JWT (como 'sub' para NameIdentifier).
-// Mantém as chaves exatamente como foram geradas no token (ex: "id", "email"), facilitando a leitura e compatibilidade.
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,11 +41,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
-// Força o provedor de configuração do .NET a ler variáveis de ambiente do sistema.
-// Essencial para produção (Docker, AWS, Azure), permitindo que 'Jwt__Key' seja interpretada corretamente como 'Jwt:Key'.
+// Ler variáveis de ambiente (útil em containers/CI). A configuração pode vir
+// tanto de `appsettings.json` quanto do ambiente (ex: Jwt__Key em Docker).
 builder.Configuration.AddEnvironmentVariables();
 
-// Recupera a string de conexão centralizada na configuração.
+// String de conexão lida via configuração/ambiente
 var connectionString = builder.Configuration["CONNECTION_STRING"];
 
 #endregion

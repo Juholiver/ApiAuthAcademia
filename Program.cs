@@ -48,7 +48,7 @@ builder.Configuration.AddEnvironmentVariables();
 // String de conexão lida via configuração/ambiente
 var connectionString = builder.Configuration["CONNECTION_STRING"];
 
-#endregion
+
 
 #region 2. INJEÇÃO DE DEPENDÊNCIAS (IoC)
 
